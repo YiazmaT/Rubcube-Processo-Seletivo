@@ -4,6 +4,7 @@ import Icon1 from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { getRepoDetailsApi } from './apis'
 
+//Repo info page
 export default class RepoInfoPage extends React.Component {
     constructor() {
         super()
@@ -21,6 +22,7 @@ export default class RepoInfoPage extends React.Component {
         this.importRepoDetails()
     }
 
+    //Calls the API to import repo details
     importRepoDetails = async () => {
         let repoDescription = await getRepoDetailsApi(this.props.user.login, this.props.repo.name)
         if (repoDescription) {
@@ -66,6 +68,7 @@ export default class RepoInfoPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    //Middle text
     regularText: {
         textAlign: 'justify',
         fontSize: 20,
@@ -80,6 +83,8 @@ const styles = StyleSheet.create({
         marginLeft: 30,
         marginTop: 30,
     },
+
+    //Access button
     accessButton: {
         flexDirection: "row",
         justifyContent: 'center',
@@ -98,13 +103,15 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
 
-    //return button icon
+    //Return button icon
     returnButton: {
         marginTop: 15,
         marginLeft: 15,
         height: "100%",
         textAlignVertical: 'center',
     },
+
+    //Header
     headerView: {
         paddingRight: "10%",
         width: "100%",
@@ -122,7 +129,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 15,
     },
-    //profile picture styles
+
+    //Profile picture styles
     profilePicture: {
         alignSelf: 'center',
         width: 150,

@@ -5,16 +5,17 @@ import { AsyncStorage } from 'react-native';
 import UserInfoPage from './Libraries/UserInfoPage'
 import { getUserFromApi } from './Libraries/apis'
 
-//button prop to display all users, when clicked, redirects to userInfo page
+//Button prop to display each user, when clicked, redirects to userInfo page
 const User = props => (
   <TouchableOpacity key={props.user.id} onPress={props.inspectUser} style={styles.openUserButton}>
     <Text key={props.user.login} style={styles.openUserButtonText}>{props.user.login}</Text>
   </TouchableOpacity>
 )
 
-//carrys the current user that is being inspected
+//Carrys the current user that is being inspected (sets when you click on an user)
 var inspectedUser = {}
 
+//Default App Class
 export default class App extends React.Component {
   constructor() {
     super()
@@ -27,29 +28,29 @@ export default class App extends React.Component {
     this.importLocalData()
   }
 
-  //toggles user inspector scene
+  //Toggles user inspector page
   toggleInspectUser() {
     this.setState(prevState => ({ showContact: !prevState.showContact }))
   }
 
-  //selects user and toggles user inspector scene
+  //Selects user and toggles user inspector page
   inspectUser(user) {
     inspectedUser = user
     this.toggleInspectUser()
   }
 
-  //just control newUserModal, turning it on/off
+  //Controls newUserModal, turning it on/off
   toggleModal() {
     this.setState(prevState => ({ addUserModal: !prevState.addUserModal }))
     this.setState({ newUserName: "" })
   }
 
-  //collects keyboard input and add to state (which will be saved in this.state.users later)
+  //Collects keyboard input and add to state (which will be saved in this.state.users)
   handleNameChange = newUserName => {
     this.setState({ newUserName })
   }
 
-  //delete user from the list
+  //Delete user from the list
   deleteUser() {
     this.setState({
       users: this.state.users.filter(user => user.name !== inspectedUser.name)
@@ -57,7 +58,7 @@ export default class App extends React.Component {
     this.toggleInspectUser()
   }
 
-  //add user to this.state.users and invoke saveLocalData function, also toggle the newUserModal off
+  //Add user to this.state.users and invoke saveLocalData function, also toggle the newUserModal off
   addUser = async () => {
     let newUser = await getUserFromApi(this.state.newUserName)
     if (newUser) {
@@ -70,36 +71,32 @@ export default class App extends React.Component {
       this.toggleModal()
     }
     else {
-      //if user not found, clean field
+      //If user not found, clean field
       this.setState({
         newUserName: "",
       })
     }
   }
 
-  //export users from this.state to local phone memory
+  //Export users from this.state to local phone memory using async library
   saveLocalData = async () => {
     try {
-      //AsyncStorage.clear()
       AsyncStorage.setItem("appUsers", JSON.stringify(this.state.users))
-      //console.log(JSON.stringify(this.state.users))
     }
     catch (error) {
       alert(error)
     }
   }
 
-  //import saved users from phone memory using async library
+  //Import saved users from phone memory using async library
   importLocalData = async () => {
     try {
       const appUsers = await AsyncStorage.getItem('appUsers')
       if (appUsers !== null) {
         const savedUsers = JSON.parse(appUsers)
-        //console.log(savedUsers)
         this.setState({
           users: savedUsers
         })
-        //console.log(this.state.users)
       }
     }
     catch (error) {
@@ -108,7 +105,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    //User Info scene
+    //User Info page
     if (this.state.showContact) {
       return (
         <UserInfoPage
@@ -119,7 +116,7 @@ export default class App extends React.Component {
       )
     }
 
-    //main scene
+    //Main page
     return (
       <View style={styles.appContainer}>
 
@@ -151,7 +148,6 @@ export default class App extends React.Component {
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
@@ -208,13 +204,13 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
 
-  //View of the main scene
+  //View of the main page
   appContainer: {
     flex: 1,
     alignItems: 'center',
   },
 
-  //Add button, at the bottom of the main scene
+  //Add button, at the bottom of the main page
   addButton: {
     justifyContent: 'center',
     alignItems: 'center',

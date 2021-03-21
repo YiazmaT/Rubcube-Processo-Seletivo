@@ -4,23 +4,29 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modal'
 import { getAllReposFromApi } from './apis'
 import RepoInfoPage from './RepoInfoPage'
+import Loader from "react-loader-spinner"
 
+//Button prop to display each repo, when clicked, redirects to repoInfo page
 const Repo = props => (
-    <TouchableOpacity style={styles.openRepButton} onPress={props.inspectRepo}>
-        <Text style={styles.openRepButtonText}>{props.repo.name}</Text>
+    <TouchableOpacity key = {uniqueKeyCount++} style={styles.openRepButton} onPress={props.inspectRepo}>
+        <Text key = {uniqueKeyCount++} style={styles.openRepButtonText}>{props.repo.name}</Text>
     </TouchableOpacity>
 )
 
-//carrys the current repo that is being inspected
+//Unique numeric key for Repo buttons
+var uniqueKeyCount = 0
+
+//Carrys the repo that will be inspected
 var inspectedRepo = {}
 
+//User info Page
 export default class UserInfoPage extends React.Component {
     constructor() {
         super()
         this.state = {
             repos: [],
             deleteUserModal: false,
-            inspectRepo: false
+            inspectRepo: false,
         }
     }
 
@@ -28,19 +34,23 @@ export default class UserInfoPage extends React.Component {
         this.importReposFromUser()
     }
 
+    //Selects repo and toggles repo inspector page
     inspectRepo(repo) {
         inspectedRepo = repo
         this.toggleInspectRepo()
     }
 
+    //Toggles inspect page on and off
     toggleInspectRepo() {
         this.setState(prevState => ({ inspectRepo: !prevState.inspectRepo }))
     }
 
+    //Toggles delete modal (confirms if you really want to delete an user)
     toggleModal() {
         this.setState(prevState => ({ deleteUserModal: !prevState.deleteUserModal }))
     }
 
+    //Calls the API to import repos from an user
     importReposFromUser = async () => {
         let userRepos = await getAllReposFromApi(this.props.user.login)
         if (userRepos) {
@@ -79,6 +89,7 @@ export default class UserInfoPage extends React.Component {
 
                         <ScrollView>
                             {this.state.repos.map(repo => (<Repo repo={repo}
+                                key = {repo.name}
                                 inspectRepo={() => this.inspectRepo(repo)}
                             />))}
                         </ScrollView>
@@ -112,7 +123,7 @@ export default class UserInfoPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    //Modal window to add new users
+    //Modal window to delete an user
     modal: {
         backgroundColor: 'white',
         height: 200,
@@ -146,6 +157,7 @@ const styles = StyleSheet.create({
         marginLeft: 14,
     },
 
+    //Inspect repo button
     openRepButton: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -161,7 +173,8 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         textAlignVertical: 'center',
     },
-    //delete button styles
+
+    //Delete button styles
     deleteButtonText: {
         color: "white",
         fontSize: 20,
@@ -178,7 +191,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#CA4141",
     },
-    //user name style
+
+    //User name style
     userName: {
         textAlign: 'center',
         textAlignVertical: 'center',
@@ -186,13 +200,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 15,
     },
-    //profile picture styles
+
+    //Profile picture styles
     profilePicture: {
         width: 150,
         height: 150,
         borderRadius: 10,
         marginTop: 20,
     },
+
     //"Repositórios" header
     headerView: {
         paddingRight: "15%",
@@ -205,7 +221,7 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
     },
 
-    //return button icon
+    //Return button icon
     returnButton: {
         marginTop: 15,
         marginLeft: 15,

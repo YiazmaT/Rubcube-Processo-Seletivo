@@ -1,11 +1,12 @@
 import axios from 'axios'
 
+//API url
 const instance = axios.create({
     baseURL: 'https://api.github.com',
     timeout: 1000,
-    //headers: {'X-Custom-Header': 'foobar'}
 });
 
+//Gets all repos of an User
 const getAllReposFromApi = async (login) => {
     try {
         let received = await instance.get(`/users/${login}/repos`)
@@ -24,6 +25,7 @@ const getAllReposFromApi = async (login) => {
     }
 }
 
+//Get repo information
 const getRepoDetailsApi = async (login, repoName) => {
     try {
         let received = await instance.get(`/repos/${login}/${repoName}`)
@@ -43,6 +45,7 @@ const getRepoDetailsApi = async (login, repoName) => {
     }
 }
 
+//Get user information
 const getUserFromApi = async (login) => {
     try {
         let data = await instance.get(`/users/${login}`)
