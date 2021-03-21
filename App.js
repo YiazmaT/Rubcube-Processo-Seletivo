@@ -119,7 +119,6 @@ export default class App extends React.Component {
     //Main page
     return (
       <View style={styles.appContainer}>
-
         <Text style={styles.userHeader}>
           Usuários
         </Text>

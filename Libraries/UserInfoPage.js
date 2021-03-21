@@ -4,12 +4,13 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import Modal from 'react-native-modal'
 import { getAllReposFromApi } from './apis'
 import RepoInfoPage from './RepoInfoPage'
-import Loader from "react-loader-spinner"
+import LinearGradient from 'react-native-linear-gradient'
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 
 //Button prop to display each repo, when clicked, redirects to repoInfo page
 const Repo = props => (
-    <TouchableOpacity key = {uniqueKeyCount++} style={styles.openRepButton} onPress={props.inspectRepo}>
-        <Text key = {uniqueKeyCount++} style={styles.openRepButtonText}>{props.repo.name}</Text>
+    <TouchableOpacity key={uniqueKeyCount++} style={styles.openRepButton} onPress={props.inspectRepo}>
+        <Text key={uniqueKeyCount++} style={styles.openRepButtonText}>{props.repo.name}</Text>
     </TouchableOpacity>
 )
 
@@ -27,11 +28,17 @@ export default class UserInfoPage extends React.Component {
             repos: [],
             deleteUserModal: false,
             inspectRepo: false,
+            loader: false
         }
     }
 
     componentDidMount() {
         this.importReposFromUser()
+    }
+
+    //Toggles shimmerPlaceHolder on/off
+    toggleLoader() {
+        this.setState(prevState => ({ loader: !prevState.loader }))
     }
 
     //Selects repo and toggles repo inspector page
@@ -56,7 +63,7 @@ export default class UserInfoPage extends React.Component {
         if (userRepos) {
             this.setState({
                 repos: userRepos
-            })
+            }, () => this.toggleLoader())
         }
     }
 
@@ -83,23 +90,30 @@ export default class UserInfoPage extends React.Component {
                 </View>
 
                 <ScrollView style={{ flex: 1 }}>
-                    <View style={{ alignItems: 'center' }}>
-                        <Image style={styles.profilePicture} source={{ uri: this.props.user.avatar_url }} />
-                        <Text style={styles.userName}>{this.props.user.login}</Text>
+                    <ShimmerPlaceHolder
+                        LinearGradient={LinearGradient}
+                        style={styles.loaderPlaceHolder}
+                        autoRun={true}
+                        visible={this.state.loader}
+                    >
+                        <View style={{ alignItems: 'center' }}>
+                            <Image style={styles.profilePicture} source={{ uri: this.props.user.avatar_url }} />
+                            <Text style={styles.userName}>{this.props.user.login}</Text>
 
-                        <ScrollView>
-                            {this.state.repos.map(repo => (<Repo repo={repo}
-                                key = {repo.name}
-                                inspectRepo={() => this.inspectRepo(repo)}
-                            />))}
-                        </ScrollView>
-
-                        <TouchableOpacity style={styles.deleteButton} onPress={() => this.toggleModal()}>
-                            <Icon name="trash-o" size={30} color="white" />
-                            <Text style={styles.deleteButtonText}>Remover Usuário</Text>
-                        </TouchableOpacity>
-                    </View>
+                            <ScrollView>
+                                {this.state.repos.map(repo => (<Repo repo={repo}
+                                    key={repo.name}
+                                    inspectRepo={() => this.inspectRepo(repo)}
+                                />))}
+                            </ScrollView>
+                        </View>
+                    </ShimmerPlaceHolder>
                 </ScrollView>
+
+                <TouchableOpacity style={styles.deleteButton} onPress={() => this.toggleModal()}>
+                    <Icon name="trash-o" size={30} color="white" />
+                    <Text style={styles.deleteButtonText}>Remover Usuário</Text>
+                </TouchableOpacity>
 
                 <Modal isVisible={this.state.deleteUserModal} onBackdropPress={() => this.toggleModal()}>
                     <View style={styles.modal}>
@@ -123,6 +137,13 @@ export default class UserInfoPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    //Loader (ShimmerPlaceHolder)
+    loaderPlaceHolder:{
+        borderRadius: 10,
+        margin: 10,
+        alignItems: 'center',
+    },
+
     //Modal window to delete an user
     modal: {
         backgroundColor: 'white',
@@ -184,6 +205,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: 'center',
         alignItems: 'center',
+        alignSelf: 'center',
         marginTop: 10,
         marginBottom: 24,
         height: 60,

@@ -52,7 +52,7 @@ const getUserFromApi = async (login) => {
         return data.data
     }
     catch (error) {
-        alert(error)
+        alert("Usuário não encontrado. \n" + error)
         return false
     }
 }

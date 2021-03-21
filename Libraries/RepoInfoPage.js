@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Linking } 
 import Icon1 from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { getRepoDetailsApi } from './apis'
+import LinearGradient from 'react-native-linear-gradient'
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder'
 
 //Repo info page
 export default class RepoInfoPage extends React.Component {
@@ -14,12 +16,18 @@ export default class RepoInfoPage extends React.Component {
                 description: "",
                 html_url: "",
                 language: "",
-            }
+            },
+            loader: false,
         }
     }
 
     componentDidMount() {
         this.importRepoDetails()
+    }
+
+    //Toggles shimmerPlaceHolder on/off
+    toggleLoader() {
+        this.setState(prevState => ({ loader: !prevState.loader }))
     }
 
     //Calls the API to import repo details
@@ -28,7 +36,7 @@ export default class RepoInfoPage extends React.Component {
         if (repoDescription) {
             this.setState({
                 repo: repoDescription
-            })
+            }, () => this.toggleLoader())
         }
     }
 
@@ -46,14 +54,21 @@ export default class RepoInfoPage extends React.Component {
 
                 <View style={{ flex: 1 }}>
                     <ScrollView>
-                        <Image style={styles.profilePicture} source={{ uri: this.props.user.avatar_url }} />
-                        <Text style={styles.userName}>{this.props.user.login}</Text>
+                        <ShimmerPlaceHolder
+                            LinearGradient={LinearGradient}
+                            style={styles.loaderPlaceHolder}
+                            autoRun={true}
+                            visible={this.state.loader}
+                        >
+                            <Image style={styles.profilePicture} source={{ uri: this.props.user.avatar_url }} />
+                            <Text style={styles.userName}>{this.props.user.login}</Text>
 
-                        <Text style={styles.highlightText}>Descrição</Text>
-                        <Text style={styles.regularText}>{this.state.repo.description}</Text>
+                            <Text style={styles.highlightText}>Descrição</Text>
+                            <Text style={styles.regularText}>{this.state.repo.description}</Text>
 
-                        <Text style={styles.highlightText}>Linguagem</Text>
-                        <Text style={styles.regularText}>{this.state.repo.language}</Text>
+                            <Text style={styles.highlightText}>Linguagem</Text>
+                            <Text style={styles.regularText}>{this.state.repo.language}</Text>
+                        </ShimmerPlaceHolder>
                     </ScrollView>
 
                     <TouchableOpacity style={styles.accessButton}
@@ -68,6 +83,12 @@ export default class RepoInfoPage extends React.Component {
 }
 
 const styles = StyleSheet.create({
+    //Loader (ShimmerPlaceHolder)
+    loaderPlaceHolder: {
+        borderRadius: 10,
+        margin: 10,
+    },
+
     //Middle text
     regularText: {
         textAlign: 'justify',
